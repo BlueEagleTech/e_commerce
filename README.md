@@ -23,7 +23,7 @@ Principales fonctionnalités
 
 1. Cloner le projet
    bash
-   git clone https://github.com/ton-utilisateur/nom-du-repo.git
+   git clone https://github.com/BlueEagleTech/e_commerce.git
    cd nom-du-repo
 2. python -m venv env
 source env/bin/activate  # Linux/macOS
