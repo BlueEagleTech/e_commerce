@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script> 
+    <title>Connexion - E-TECH Store</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body class="d-flex justify-content-center align-items-center vh-100">
+    
+    <div class="border p-4 w-50 rounded shadow bg-light mx-auto">
+        <form method="post">
+            {% for message in messages %}
+    <div class="alert {% if message.tags %} alert-{{ message.tags }}{% else %}alert-info{% endif %}"
+    role="alert">{{ message }}</div>
+    {% endfor %}
+
+            {% csrf_token %}
+            <h2 class="text-center mb-4">Se connecter à E-TECH Store</h2>
+            <div class="mb-3">
+                <label for="id_username" class="form-label">Nom d'utilisateur</label>
+                <input type="text" name="username" class="form-control" id="id_username" placeholder="Nom d'utilisateur" value="{{ username }}" required autofocus>
+                {% if form.username.errors %}
+                    <div class="text-danger">
+                        {% for error in form.username.errors %}
+                            <p>{{ error }}</p>
+                        {% endfor %}
+                    </div>
+                {% endif %}
+            </div>
+
+            <div class="mb-3">
+                <label for="id_password" class="form-label">Mot de passe</label>
+                <input type="password" name="password" class="form-control" id="id_password" placeholder="Mot de passe" required>
+                {% if form.password.errors %}
+                    <div class="text-danger">
+                        {% for error in form.password.errors %}
+                            <p>{{ error }}</p>
+                        {% endfor %}
+                    </div>
+                {% endif %}
+            </div>
+
+            <div class="mb-3 form-check">
+                <input type="checkbox" name="remember" class="form-check-input" id="remember" {% if request.COOKIES.remember_token %}checked{% endif %}>
+                <label class="form-check-label" for="remember">Se souvenir de moi</label>
+            </div>
+            <div class="mt-3 text-center">
+                <a href="{% url 'ecom_app:signup' %}">Pas encore de compte ? S'inscrire ici</a>
+            </div>
+
+            <button type="submit" class="btn btn-primary w-100">Se connecter</button>
+        </form>
+        <br>
+        <div class="card">
+            <a href="{% url 'ecom_app:index' %}" role="button" class="btn btn-lg btn-secondary">← Retour à la liste</a>
+        </div>
+       
+    </div>
+   
+</body>
+</html>
