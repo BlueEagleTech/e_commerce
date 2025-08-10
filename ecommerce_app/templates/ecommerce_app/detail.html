@@ -18,7 +18,7 @@
         {% if product.images %}
             <img src="{{ product.images.url }}" alt="{{ product.name }}">
         {% endif %}
-        <p><strong>Prix :</strong> {{ product.price }} €</p>
+        <p><strong>Prix :</strong> {{ product.price }} F CFA</p>
         <p><strong>Stock :</strong> {{ product.stock }}</p>
         <p>{{ product.description }}</p>
         <a href="{% url 'ecom_app:index' %}" role="button" class="btn btn-lg btn-secondary">← Retour à la liste</a>

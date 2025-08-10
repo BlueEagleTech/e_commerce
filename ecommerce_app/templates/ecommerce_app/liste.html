@@ -64,7 +64,7 @@
             <div class="card-body">
               <h5 class="card-title">{{ product.name }}</h5>
               <p class="card-text">{{ product.description }}</p>
-              <p class="card-text">Prix: {{ product.price }} €</p>
+              <p class="card-text">Prix: {{ product.price }} F CFA</p>
               <p class="card-text">stock: {{ product.stock }}</p>
              <p><a href="{% url 'ecom_app:détail' product.id %}">Voir plus</a>
                 <a href="{% url 'ecom_app:achat' product.id %}" class="btn btn-success btn-lg">Ajouter au panier</a>
