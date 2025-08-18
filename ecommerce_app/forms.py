@@ -1,6 +1,16 @@
 from .models import Product
 from django.contrib.auth.models import User
 from django import forms
+from .models import Profile
+
+class AddressForm(forms.ModelForm):
+    class Meta:
+        model = Profile
+        fields = ['address']
+        widgets = {
+            'address': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Adresse de livraison'}),
+        }
+        labels = {'address': 'Adresse de livraison'}
 
 class ProductForm(forms.ModelForm):
     class Meta:

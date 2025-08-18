@@ -3,8 +3,9 @@ from django.http import HttpResponse
 from django.contrib.auth.models import User
 from django.utils import timezone
 from django.contrib.auth.views import LogoutView
-from .models import Product,CartItem,Cart
+from .models import Product,CartItem,Cart,Order
 from .forms import ProductForm,SignUpForm
+from .forms import AddressForm
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
 from django.core.mail import send_mail
@@ -12,40 +13,86 @@ from e_commerce import settings
 from django.contrib import messages
 # Create your views here.
 
+#DASHBOARD
 @login_required
 def dashboard(request):
     if request.user.is_staff:
-        # Accès admin
-        return render(request, 'admin_dashboard.html')
+         if request.user.profile.role in ['vendeur', 'admin']:
+            total_products = Product.objects.count()
+            total_clients = User.objects.count()
+            produits = Product.objects.all()
+            commandes = Cart.objects.count()
+            return render(request, 'ecommerce_app/vendeur_dashboard.html', {
+                "total_products": total_products,
+                "total_orders": commandes,
+                "total_clients": total_clients
+            })
     else:
         # Accès client
-        return render(request, 'client_dashboard.html')
+        return redirect('ecom_app:index')
 
+
+########################################PAGE INDEX SELECTIF############################################
 def index(request):
+    if request.user.profile.role in ['vendeur', 'admin']:
+        return redirect("ecom_app:dashboard")
     product = Product.objects.all()
     return render(request,'ecommerce_app/liste.html',{'products':product})
 
+########################################PAGE PROFILE POUR LES CLIENTS####################################
 def profile(request):
     product = Product.objects.all()
-    return render(request,'ecommerce_app/liste.html',{'products':product})  
+    return render(request,'ecommerce_app/liste.html',{'products':product})
 
+#DETAIL D'UN PRODUIT
 def product_detail(request,product_id):
     product = get_object_or_404(Product,id = product_id)
     return render(request,'ecommerce_app/detail.html',{'product':product})
 
+#AJOUTER UN PRODUIT
 @login_required
 def ajout_produit(request):
     if request.user.is_staff:
         if request.method == 'POST':
             form = ProductForm(request.POST, request.FILES)
             if form.is_valid():
-                form.save()
-                return redirect('ecom_app:index')
+               product = form.save(commit=False)  # ne sauvegarde pas encore
+               product.user = request.user       # lie le produit à l'utilisateur
+               product.save()
+               form.save()
+               return redirect('ecom_app:index')
+            
         else:
-                form = ProductForm()
+            form = ProductForm()
         return render(request,'ecommerce_app/ajout.html',{'form':form})
+    else:
+        return redirect('ecom_app:profile')
+
+#MODIFIER UN PRODUIT
+@login_required
+def update_product(request,product_id):
+    product = get_object_or_404(Product,id= product_id)
+    if request.method == 'POST':
+        form = ProductForm(request.POST, instance=product)
+        form.save()
+        return redirect('ecom_app:index')
+    else:
+        form = ProductForm(instance=product)
+        return render(request,'ecommerce_app/update.html',{'form':form,'product':product})
 
 
+#SUPPRIMER UN PRODUIT
+@login_required
+def delete_product(request,product_id):
+    product = get_object_or_404(Product,id=product_id)
+    if request.method== 'POST':
+        product.delete()
+        return redirect('ecom_app:index')
+    else:
+        form = ProductForm(instance=product)
+        return render(request,'ecommerce_app/delete.html',{'form':form,'product':product})
+    
+#VUE D'INSCRIPTION
 def signup(request):
     if request.method == "POST":
         form = SignUpForm(request.POST)
@@ -96,15 +143,23 @@ def add_to_cart(request, product_id):
 
 @login_required
 def view_cart(request):
-    # Récupérer le panier de l'utilisateur, s'il existe et n'est pas encore validé
     cart = Cart.objects.filter(user=request.user, is_ordered=False).first()
-
-    # Si aucun panier n'est trouvé, on peut afficher un message ou rediriger vers la page d'accueil
     if not cart:
         return redirect('ecom_app:index')
 
-    # Renvoyer le panier à la vue
-    return render(request, 'ecommerce_app/panier.html', {'cart': cart})
+    # Pré-remplir le formulaire avec l'adresse existante
+    profile = request.user.profile
+    form = AddressForm(instance=profile)
+
+    if request.method == 'POST':
+        form = AddressForm(request.POST, instance=profile)
+        if form.is_valid():
+            form.save()
+            # Confirmer le panier
+            cart.confirm_order()
+            return redirect('ecom_app:panier')  # ou page confirmation
+
+    return render(request, 'ecommerce_app/panier.html', {'cart': cart, 'form': form})
 
 @login_required
 def validate_cart(request):
@@ -114,10 +169,12 @@ def validate_cart(request):
         # Si aucun panier n'existe, on redirige vers la page d'accueil
         return redirect('ecom_app:index')
 
-    # Marquer le panier comme validé (commande confirmée)
-    cart.is_ordered = True
-    cart.ordered_at = timezone.now()  # Ajouter la date et heure de la commande
-    cart.save()
+    # Valider la commande et réduire le stock
+    try:
+        cart.confirm_order()  # ← c’est ici que le stock diminue
+    except ValueError as e:
+        # Gérer le cas où le stock est insuffisant
+        return render(request, 'ecommerce_app/order_error.html', {'error': str(e)})
 
     # Envoi de l'email à l'administrateur
     send_mail(
@@ -129,7 +186,52 @@ def validate_cart(request):
         recipient_list=[settings.ADMIN_EMAIL],  # L'email de l'admin
     )
 
-    # Ici tu peux ajouter une logique pour envoyer un email à l'admin, enregistrer la commande en base, etc.
-
+    
     # Renvoyer une réponse qui confirme la commande
     return render(request, 'ecommerce_app/order_success.html', {'cart': cart})
+##############################################VUE POUR DASHBOARD########################################
+################################################MANIPULER LES PRODUITS#################################
+def liste_produits(request):
+    if request.user.profile.role != "admin":
+        return redirect("ecom_app:index")
+    products = Product.objects.all()
+    return render(request,'ecommerce_app/dashboard/produits.html',{'products':products})
+
+def liste_clients(request):
+    if request.user.profile.role != "admin":
+        return redirect("ecom_app:index")
+    clients = User.objects.all()
+    return render(request,'ecommerce_app/dashboard/clients.html',{'clients':clients})
+
+def liste_commandes(request):
+    if request.user.profile.role not in ['vendeur', 'admin']:
+        return redirect('ecom_app:profile')
+
+    commandes = Cart.objects.all().order_by('-created_at')
+
+    # Vérifier si on a demandé de marquer une commande comme livrée
+    if request.method == "POST":
+        cart_id = request.POST.get('cart_id')
+        cart = get_object_or_404(Cart, id=cart_id)
+        try:
+            cart.mark_as_delivered()
+        except ValueError as e:
+            # tu peux gérer un message flash ici si besoin
+            pass
+        return redirect('ecom_app:commandes')
+
+    return render(request, 'ecommerce_app/dashboard/commandes.html', {'commandes': commandes})
+
+
+#def parametre(request):
+    if request.user.profile.role != "admin":
+        return redirect("ecom_app:index")
+    return render(request,'ecommerce_app/dashboard/parametre.html')
+##############################################MANIPULER LES PRODUITS#################################
+##############################################MANIPULER LES COMMANDES################################
+
+##############################################MANIPULER LES COMMANDES################################
+##############################################VUE POUR DASHBOARD########################################
+#---------------------------------------------CREATION DES API--------------------------------------------------------------
+
+#API D'INSCRIPTIONS

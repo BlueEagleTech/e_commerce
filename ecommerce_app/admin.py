@@ -1,6 +1,6 @@
 from django.contrib import admin
 from .models import Product
-from .models import Cart, CartItem
+from .models import Cart, CartItem,Profile
 # Register your models here.
 
 
@@ -25,9 +25,13 @@ class CartAdmin(admin.ModelAdmin):
     list_display = ('user', 'created_at', 'is_ordered', 'ordered_at')  # Champs à afficher dans la liste
     search_fields = ('user__username',)  # Recherche par nom d'utilisateur
     inlines = [CartItemInline]  # Afficher les CartItems associés sous le formulaire du panier
+class ProfileAdmin(admin.ModelAdmin):
+    list_display = ('user','role',)  # Champs à afficher dans la liste
+      # Afficher les CartItems associés sous le formulaire du panier
 
 # Enregistrement des modèles dans l'admin
 admin.site.register(Cart, CartAdmin)
 admin.site.register(CartItem)
+admin.site.register(Profile,ProfileAdmin)
 
 

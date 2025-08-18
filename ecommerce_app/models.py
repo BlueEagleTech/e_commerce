@@ -1,8 +1,11 @@
 from django.db import models
 from django.contrib.auth import get_user_model
-
-
+from django.utils import timezone
+from django.db import transaction
 # Create your models here.
+User = get_user_model()
+
+
 
 class Product(models.Model):
     name = models.CharField(max_length=255)
@@ -11,26 +14,70 @@ class Product(models.Model):
     stock = models.PositiveIntegerField()
     images = models.ImageField(upload_to='products/',blank=True, null=True)
     created_at = models.DateTimeField(auto_now_add=True)
+    user = models.ForeignKey(User, on_delete=models.CASCADE,null=True)  
 
     def __str__(self):
         return self.name
-    
-User = get_user_model()
 
+class Order(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    product = models.ForeignKey(Product, on_delete=models.CASCADE)
+    quantity = models.PositiveIntegerField(default=1)
+    date_ordered = models.DateTimeField(auto_now_add=True)
+    status = models.CharField(
+        max_length=20,
+        choices=[
+            ('pending', 'En attente'),
+            ('confirmed', 'Confirmée'),
+            ('shipped', 'Expédiée'),
+            ('delivered', 'Livrée'),
+            ('cancelled', 'Annulée'),
+        ],
+        default='pending'
+    )
+
+    def __str__(self):
+        return f"Commande {self.id} - {self.user.username}"  
 class Cart(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE, related_name="cart")
     created_at = models.DateTimeField(auto_now_add=True)
     is_ordered = models.BooleanField(default=False)
     ordered_at = models.DateTimeField(null=True, blank=True)
-
+    
+    # ⚡ Nouveau pour la livraison
+    is_delivered = models.BooleanField(default=False)
+    delivered_at = models.DateTimeField(null=True, blank=True)
 
     def __str__(self):
         return f"Panier de {self.user.username}"
 
     def get_total_price(self):
         return sum(item.get_total_price() for item in self.items.all())
+    
+    def confirm_order(self):
+        if self.is_ordered:
+            raise ValueError("Cette commande a déjà été validée.")
 
-
+        with transaction.atomic():
+            for item in self.items.select_related('product').all():
+                if item.quantity > item.product.stock:
+                    raise ValueError(f"Stock insuffisant pour {item.product.name}")
+                item.product.stock -= item.quantity
+                item.product.save()
+            
+            self.is_ordered = True
+            self.ordered_at = timezone.now()
+            self.save()
+    
+    def mark_as_delivered(self):
+        """Marquer la commande comme livrée"""
+        if not self.is_ordered:
+            raise ValueError("Cette commande n'a pas encore été validée.")
+        if self.is_delivered:
+            raise ValueError("Cette commande a déjà été livrée.")
+        self.is_delivered = True
+        self.delivered_at = timezone.now()
+        self.save()
 class CartItem(models.Model):
     cart = models.ForeignKey(Cart, on_delete=models.CASCADE, related_name="items")
     product = models.ForeignKey(Product, on_delete=models.CASCADE)
@@ -41,3 +88,16 @@ class CartItem(models.Model):
 
     def get_total_price(self):
         return self.product.price * self.quantity
+
+class Profile(models.Model):
+    ROLE_CHOICES = (
+        ('acheteur', 'Acheteur'),
+        ('vendeur', 'Vendeur'),
+        ('admin', 'Admin'),
+    )
+    user = models.OneToOneField(User, on_delete=models.CASCADE)
+    role = models.CharField(max_length=20, choices=ROLE_CHOICES, default='acheteur')
+    address = models.CharField(max_length=255, blank=True, null=True)  # ⚡ Nouveau
+
+    def __str__(self):
+        return f"{self.user.username} - {self.role}"

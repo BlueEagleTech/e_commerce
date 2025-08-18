@@ -1,0 +1,43 @@
+
+{% extends 'ecommerce_app/vendeur_dashboard.html' %}
+
+{% block content %}
+<h2>
+    liste des produits
+</h2>
+<div class="row">
+{% for product in products %}
+<div class="col-md-4 mb-4">
+     <div class="card h-100 shadow-sm border-primary">
+    {% if product.images %}
+    <img src="{{ product.images.url }}" class="card-img-top" alt="{{ product.name }}">
+    {% endif %}
+    
+    <div class="card-body">
+      <h5 class="card-title">{{ product.name }}</h5>
+      <p class="card-text text-muted">{{ product.description|truncatechars:100 }}</p>
+      <p class="card-text"><strong>Prix:</strong> {{ product.price }} F CFA</p>
+      <p class="card-text"><strong>Stock:</strong> {{ product.stock }}</p>
+      
+      <a href="{% url 'ecom_app:détail' product.id %}" class="btn btn-outline-info btn-sm">
+        Voir plus
+      </a>
+
+      {% if user.is_authenticated and user.profile.role == 'vendeur' or user.profile.role == 'admin' %}
+      <div class="d-flex gap-2 mt-3">
+        <a href="{% url 'ecom_app:update' product.id %}" class="btn btn-primary btn-sm">
+          Modifier
+        </a>
+        <a href="{% url 'ecom_app:delete' product.id %}" class="btn btn-danger btn-sm">
+          Supprimer
+        </a>
+      </div>
+      {% endif %}
+    </div>
+  </div> 
+</div>
+{% endfor %}
+</div>
+
+
+{% endblock %}

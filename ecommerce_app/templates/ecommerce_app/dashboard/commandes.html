@@ -1,0 +1,56 @@
+{% extends 'ecommerce_app/vendeur_dashboard.html' %}
+
+{% block content %}
+<h2>Liste des commandes</h2>
+
+<table class="table table-striped">
+    <thead>
+        <tr>
+            <th>#</th>
+            <th>Client</th>
+            <th>Adresse</th>
+            <th>Date commande</th>
+            <th>Statut</th>
+            <th>Date livraison</th>
+            <th>Actions</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for commande in commandes %}
+        <tr>
+            <td>{{ commande.id }}</td>
+            <td>{{ commande.user.username }}</td>
+            <td>{{ commande.user.profile.address }}</td>
+            <td>{{ commande.ordered_at|date:"d/m/Y H:i" }}</td>
+            <td>
+                {% if commande.is_delivered %}
+                    <span class="badge bg-success">Livré</span>
+                {% elif commande.is_ordered %}
+                    <span class="badge bg-warning text-dark">En attente</span>
+                {% else %}
+                    <span class="badge bg-secondary">Non confirmé</span>
+                {% endif %}
+            </td>
+            <td>
+                {% if commande.delivered_at %}
+                    {{ commande.delivered_at|date:"d/m/Y H:i" }}
+                {% else %}
+                    -
+                {% endif %}
+            </td>
+            <td>
+                {% if not commande.is_delivered and commande.is_ordered %}
+                <form method="post" style="display:inline;">
+                    {% csrf_token %}
+                    <input type="hidden" name="cart_id" value="{{ commande.id }}">
+                    <button type="submit" class="btn btn-success btn-sm">Marquer livré</button>
+                </form>
+                {% else %}
+                    -
+                {% endif %}
+            </td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+{% endblock %}
