@@ -48,7 +48,7 @@ AXES_COOLOFF_TIME = 1            # Temps de blocage en heures
 AXES_LOCKOUT_TEMPLATE = 'registration/account_locked.html'  # page custom (optionnel)
 AXES_USE_USER_AGENT = True 
 
-ADMIN_EMAIL = 'tafsirmoctar.ba@unchk.edu.sn'  # L'email de l'admin
+ADMIN_EMAIL = 'mba898127@gmail.com'  # L'email de l'admin
 
 EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
 EMAIL_HOST = 'smtp.gmail.com'
