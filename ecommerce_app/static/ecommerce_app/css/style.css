@@ -1,0 +1,112 @@
+body, html {
+    margin: 0;
+    padding: 0;
+    width: 100%;
+}
+
+.hero-section {
+    width: 100%;
+    height: 100vh; /* ou 100vh si tu veux toute la hauteur de l'écran */
+    margin: 0;   /* supprime l'espace éventuel autour */
+    padding: 0;
+}
+.hero-section:hover div {
+  transform: scale(1.03);
+  filter: brightness(1);
+}
+
+
+body {
+    background-color: #fdf8f6; /* beige rosé clair */
+    font-family: 'Poppins', sans-serif;
+    color: #2e2e2e;
+}
+
+/* Cartes produits */
+.card {
+    border-radius: 16px;
+    transition: all 0.3s ease;
+}
+
+.card:hover {
+    transform: translateY(-6px);
+    box-shadow: 0 10px 25px rgba(0,0,0,0.15);
+}
+.navbar-glam .navbar-brand {
+    font-family: 'Great Vibes', cursive;
+    font-size: 1.8rem; /* Ajuste selon ton goût */
+    letter-spacing: 1px;
+    color: #5a3d2b;
+    transition: color 0.3s;
+}
+
+@keyframes shine {
+  0% { text-shadow: 0 0 5px #fff, 0 0 10px #fff; }
+  50% { text-shadow: 0 0 10px #ffd700, 0 0 20px #ffd700; }
+  100% { text-shadow: 0 0 5px #fff, 0 0 10px #fff; }
+}
+
+.navbar-glam .navbar-brand {
+    animation: shine 3s infinite ease-in-out;
+}
+
+.navbar-glam .navbar-brand:hover {
+    color: #c97b63;
+    text-shadow: 0 2px 5px rgba(255,215,0,0.5); /* petit effet brillant */
+}
+
+.card-img-top {
+    height: 220px;
+    object-fit: cover;
+    border-top-left-radius: 16px;
+    border-top-right-radius: 16px;
+}
+
+/* Bouton Dashboard flottant */
+.floating-btn-profil {
+    position: fixed;      /* pour qu'il flotte au-dessus de tout */
+    bottom: 20px;         /* 20px du bas */
+    right: 20px;          /* 20px de la droite */
+    z-index: 9999;        /* au-dessus des autres éléments */
+    width: 60px;
+    height: 60px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: #c97b63;  /* beige rosé */
+    color: white;
+    font-size: 1.8rem;
+    border-radius: 50%;
+    box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+    text-decoration: none;
+    transition: transform 0.2s, background-color 0.2s;
+}
+
+.floating-btn-profil:hover {
+    transform: scale(1.1);
+    background-color: #e89c80;  /* plus clair au hover */
+}
+
+
+
+.navbar {
+    background-color: #fce9e4; /* beige rosé doux */
+}
+
+.navbar a {
+    color: #333 !important;
+    font-weight: 500;
+}
+
+.navbar a:hover {
+    color: #c97b63 !important; /* accent rosé plus chaud */
+}
+
+.btn-primary {
+    background-color: #c97b63;
+    border: none;
+}
+
+.btn-primary:hover {
+    background-color: #b26553;
+}

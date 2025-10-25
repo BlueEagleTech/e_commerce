@@ -3,88 +3,189 @@
 <html lang="fr">
 <head>
   <meta charset="UTF-8">
-  <title>Dashboard</title>
+  <title>Dashboard - Téranga Beauté</title>
   <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css" rel="stylesheet">
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
   <style>
+    :root {
+      --beige: #f6ede9;
+      --rose: #e3b7a0;
+      --rose-clair: #f4d6c2;
+      --marron-clair: #b8907d;
+      --texte: #3d3d3d;
+    }
+
     body {
       min-height: 100vh;
       display: flex;
+      background: var(--beige);
+      color: var(--texte);
+      font-family: 'Poppins', sans-serif;
     }
+
+    /* Sidebar */
     .sidebar {
-      width: 250px;
-      background: #343a40;
+      width: 260px;
+      background: var(--rose);
       color: white;
       flex-shrink: 0;
-      padding: 20px;
+      padding: 25px 20px;
+      box-shadow: 3px 0 8px rgba(0,0,0,0.1);
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
     }
+
+    .sidebar h2 {
+      text-align: center;
+      font-weight: 600;
+      margin-bottom: 25px;
+      letter-spacing: 1px;
+    }
+
     .sidebar a {
-      display: block;
+      display: flex;
+      align-items: center;
+      gap: 10px;
       color: white;
       text-decoration: none;
       margin: 10px 0;
+      padding: 10px 15px;
+      border-radius: 10px;
+      transition: all 0.3s ease;
+    }
+
+    .sidebar a:hover {
+      background: var(--marron-clair);
+      transform: translateX(5px);
+    }
+
+    .sidebar i {
+      font-size: 1.2rem;
+    }
+
+    /* Bouton déconnexion */
+    .logout {
+      background: transparent;
+      border: 1px solid rgba(255,255,255,0.5);
+      color: white;
       padding: 10px;
       border-radius: 8px;
+      text-align: center;
+      transition: background 0.3s, transform 0.2s;
+      width: 100%;
     }
-    .sidebar a:hover {
-      background: #495057;
+
+    .logout:hover {
+      background: rgba(255,255,255,0.2);
+      transform: translateX(3px);
     }
+
+    /* Contenu principal */
     .content {
       flex-grow: 1;
-      padding: 20px;
-      background: #f8f9fa;
+      padding: 30px;
+      background: #fff;
+      border-top-left-radius: 30px;
+      box-shadow: -2px -2px 10px rgba(0,0,0,0.05);
+    }
+
+    .content h1 {
+      font-weight: 600;
+      color: var(--marron-clair);
+      margin-bottom: 40px;
+    }
+
+    /* Cartes statistiques */
+    .card {
+      border: none;
+      border-radius: 15px;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+      transition: transform 0.3s ease;
+    }
+
+    .card:hover {
+      transform: translateY(-5px);
+    }
+
+    .card.bg-products {
+      background: linear-gradient(135deg, var(--rose-clair), var(--rose));
+      color: white;
+    }
+
+    .card.bg-orders {
+      background: linear-gradient(135deg, #d6a38f, var(--marron-clair));
+      color: white;
+    }
+
+    .card.bg-clients {
+      background: linear-gradient(135deg, #f7c8b1, #e6a890);
+      color: white;
+    }
+
+    .card-title {
+      font-size: 1.2rem;
+      font-weight: 600;
+    }
+
+    .card-text {
+      font-size: 1rem;
     }
   </style>
 </head>
 <body>
   <!-- Sidebar -->
   <div class="sidebar">
-    <h2 class="h4">Mon Dashboard</h2>
-    <a href="{% url 'ecom_app:dashboard' %}"><i class="bi bi-house"></i> Accueil</a>
-    <a href="{% url 'ecom_app:produits' %}"><i class="bi bi-box-seam"></i> Produits</a>
-    <a href="{% url 'ecom_app:commandes' %}"><i class="bi bi-cart"></i> Commandes</a>
-   
-    <a href="{% url 'ecom_app:clients' %}"><i class="bi bi-people"></i> Clients</a>
-    <a href="{% url 'ecom_app:profile' %}"><i class="bi bi-globe"></i> Aller au site</a>
-    <a href="{% url 'ecom_app:déconnexion' %}"><i class="bi bi-door-closed"></i> Déconnexion</a>
-    
+    <div>
+      <h2>Téranga Beauté</h2>
+      <a href="{% url 'ecom_app:dashboard' %}"><i class="bi bi-house"></i> Accueil</a>
+      <a href="{% url 'ecom_app:produits' %}"><i class="bi bi-box-seam"></i> Produits</a>
+      <a href="{% url 'ecom_app:commandes' %}"><i class="bi bi-cart"></i> Commandes</a>
+      <a href="{% url 'ecom_app:clients' %}"><i class="bi bi-people"></i> Clients</a>
+      <a href="{% url 'ecom_app:profile' %}"><i class="bi bi-globe"></i> Aller au site</a>
+    </div>
+
+    <form action="{% url 'ecom_app:déconnexion' %}" method="post">
+      {% csrf_token %}
+      <button type="submit" class="logout">
+        <i class="bi bi-door-closed"></i> Déconnexion
+      </button>
+    </form>
   </div>
 
   <!-- Contenu principal -->
   <div class="content">
-    <h1 class="mb-4">Bienvenue, {{ user.username }}</h1>
+    <h1>Bienvenue, {{ user.username }}</h1>
     {% block content %}
     <div class="row">
       <div class="col-md-4">
-        <div class="card text-white bg-primary mb-3">
+        <div class="card bg-products mb-4">
           <div class="card-body">
-            <h5 class="card-title">Produits</h5>
+            <h5 class="card-title"><i class="bi bi-box-seam"></i> Produits</h5>
             <p class="card-text">{{ total_products }} produits</p>
           </div>
         </div>
       </div>
 
       <div class="col-md-4">
-        <div class="card text-white bg-success mb-3">
+        <div class="card bg-orders mb-4">
           <div class="card-body">
-            <h5 class="card-title">Commandes</h5>
+            <h5 class="card-title"><i class="bi bi-cart"></i> Commandes</h5>
             <p class="card-text">{{ total_orders }} commandes</p>
           </div>
         </div>
       </div>
 
       <div class="col-md-4">
-        <div class="card text-white bg-warning mb-3">
+        <div class="card bg-clients mb-4">
           <div class="card-body">
-            <h5 class="card-title">Clients</h5>
+            <h5 class="card-title"><i class="bi bi-people"></i> Clients</h5>
             <p class="card-text">{{ total_clients }} clients</p>
           </div>
         </div>
       </div>
     </div>
     {% endblock %}
-    
-
   </div>
 </body>
 </html>

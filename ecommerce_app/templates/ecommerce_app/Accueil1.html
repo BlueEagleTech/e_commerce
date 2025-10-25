@@ -1,0 +1,422 @@
+{% extends 'ecommerce_app/base.html' %}
+{% load static %}
+{% block title %}Accueil - Téranga Beauté{% endblock %}
+
+{% block content %}
+
+<!-- Hero Section -->
+{% static 'ecommerce_app/images/logo2.jpg' as bg_image %}
+
+<!-- Hero Section Luxe -->
+{% static 'ecommerce_app/images/logo2.jpg' as bg_image %}
+
+<section class="hero-luxe position-relative mb-0" style="height: 100vh; overflow: hidden;">
+
+  <!-- Image de fond -->
+  <div class="hero-bg position-absolute w-100 h-100" 
+       style="background-image: url('{{ bg_image }}');
+              background-size: cover;
+              background-position: center;
+              background-repeat: no-repeat;
+              filter: brightness(0.65);
+              transition: transform 1.5s ease, filter 0.5s ease;">
+  </div>
+
+  <!-- Overlay léger -->
+  <div class="overlay position-absolute top-0 start-0 w-100 h-100" 
+       style="background: rgba(253,248,246,0.35);"></div>
+
+  <!-- Contenu texte -->
+  <div class="hero-content position-absolute top-50 start-50 translate-middle text-center w-100 px-3">
+    <div class="container">
+      <h1 class="hero-title fw-bold mb-3">
+        Découvrez l'<span class="highlight-light">élégance</span> au <span class="highlight-dark">quotidien</span>
+      </h1>
+      <p class="hero-subtitle lead mb-4">
+        Nos cosmétiques et vêtements sélectionnés avec soin pour révéler votre beauté naturelle et votre style unique.
+      </p>
+      <a href="{% url 'ecom_app:blog' %}" class="btn hero-btn px-5 py-3">
+        Découvrir nos produits
+      </a>
+    </div>
+  </div>
+
+</section>
+
+<style>
+/* Hero Luxe Text */
+.hero-title {
+  font-size: 3.5rem;
+  letter-spacing: -1px; /* lettres légèrement collées */
+  background: linear-gradient(90deg, #fdf0eb 0%, #c97b63 50%, #fbe4c8 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  text-shadow: 0 2px 8px rgba(0,0,0,0.25);
+  font-weight: 800;
+  line-height: 1.1;
+  animation: shine-text 4s linear infinite;
+}
+
+.highlight-light {
+  color: #fdf0eb;
+}
+
+.highlight-dark {
+  color: #b8705a;
+}
+
+.hero-subtitle {
+  color: #2c2c2c;
+  max-width: 700px;
+  margin: 0 auto;
+  text-shadow: 0 1px 4px rgba(0,0,0,0.15);
+}
+
+/* Hero Button */
+.hero-btn {
+  background-color: #c97b63;
+  color: #fff;
+  border-radius: 50px;
+  font-weight: 600;
+  font-size: 1.2rem;
+  transition: all 0.3s ease;
+}
+.hero-btn:hover {
+  transform: scale(1.05);
+  box-shadow: 0 8px 25px rgba(0,0,0,0.3);
+}
+
+/* Animation brillance du texte */
+@keyframes shine-text {
+  0% { background-position: -500px; }
+  50% { background-position: 500px; }
+  100% { background-position: -500px; }
+}
+
+/* Responsive Text */
+@media (max-width: 768px) {
+  .hero-title { font-size: 2rem; }
+  .hero-subtitle { font-size: 1rem; }
+  .hero-btn { font-size: 1rem; padding: 0.8rem 2rem; }
+}
+</style>
+
+
+
+<section class="marketing py-5 mt-0" style="background-color: #efd1c6; margin-bottom: -30px;">
+  
+  <div class="container py-5">
+    <h1 class="text-center mb-5" style="color:#c97b63;">Nos meilleurs Produits</h1>
+
+<div class="row g-4">
+    {% for produit in produits %}
+    <div class="col-md-4">
+      {% if produit.featured %}
+        <div class="card" style="background-color:#fff5f2; border-radius:15px; box-shadow:0 8px 20px rgba(0,0,0,0.1);">
+             {% if produit.images %}
+    <img src="{{ produit.images.url }}" class="card-img-top" alt="{{ produit.name }}" 
+         style="height:250px; object-fit:cover; border-radius:15px; padding:5px;">
+            {% endif %}
+            <div class="card-body text-center">
+                <h5 class="card-title" style="color:#c97b63; font-weight:600;">{{ produit.name }}</h5>
+                <p class="card-text" style="color:#555;"><strong>Prix :</strong> {{ produit.price }} F CFA</p>
+                
+
+                <a href="{% url 'ecom_app:détail' produit.id %}" style="background-color:#c97b63; border:none;">Voir plus</a>
+                <a href="{% url 'ecom_app:achat' produit.id %}" class="btn btn-success" style="background-color:#c97b63; border:none;">Ajouter au panier</a>
+                
+            </div>
+        </div>
+        {% endif %}
+    </div>
+    {% endfor %}
+</div>
+  </div>
+  
+  
+</section>
+
+<style>
+/* Animation et hover */
+.hero-btn:hover {
+    transform: scale(1.05);
+    box-shadow: 0 6px 20px rgba(0,0,0,0.2);
+    transition: all 0.3s ease;
+}
+
+.highlight-card {
+    background: rgba(255, 255, 255, 0.8);
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+.highlight-card:hover {
+    transform: translateY(-10px) scale(1.03);
+    box-shadow: 0 10px 25px rgba(0,0,0,0.25);
+}
+
+.glam-section {
+    background: linear-gradient(135deg, #fbe4c8, #fdf0eb, #e3b7a0);
+    color: #3d3d3d;
+    text-shadow: 0 1px 3px rgba(255,255,255,0.5);
+    overflow: hidden;
+    border-radius: 20px;
+    position: relative;
+}
+
+/* Titres brillants et animés */
+.glam-title {
+    font-size: 3rem;
+    color: #b8907d;
+    background: linear-gradient(90deg, #fdf0eb, #fff3d6, #e3b7a0);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    animation: shine 3s linear infinite;
+}
+
+.glam-text {
+    font-size: 1.5rem;
+    color: #5a3d2b;
+}
+
+.glam-subtext {
+    font-size: 1.2rem;
+    color: #7d5a42;
+}
+
+/* Bouton brillant */
+.glam-btn-light {
+    background: linear-gradient(45deg, #fbe4c8, #fdf0eb, #e3b7a0);
+    color: #fff;
+    font-weight: 600;
+    border-radius: 50px;
+    box-shadow: 0 6px 20px rgba(255,215,0,0.3);
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+.glam-btn-light:hover {
+    transform: scale(1.05);
+    box-shadow: 0 10px 30px rgba(255,215,0,0.6);
+}
+
+/* Animation brillance du texte */
+@keyframes shine {
+  0% { text-shadow: 0 0 5px #fff, 0 0 10px #fff; }
+  50% { text-shadow: 0 0 10px #bc6247, 0 0 20px #bc6247; }
+  100% { text-shadow: 0 0 5px #fff, 0 0 10px #fff; }
+}
+
+/* Étincelles animées */
+.sparkle::before, .sparkle::after {
+    content:'';
+    position:absolute;
+    width:2px;
+    height:2px;
+    background:white;
+    border-radius:50%;
+    animation: sparkle 2s infinite linear;
+}
+
+@keyframes sparkle {
+    0% { transform: translate(0,0) scale(1); opacity:1; }
+    50% { transform: translate(200px,100px) scale(0.5); opacity:0.5; }
+    100% { transform: translate(-200px,-100px) scale(1); opacity:1; }
+}
+
+</style>
+
+
+<!-- Section Marketing Dynamique -->
+<section class="marketing py-5" style="background-color: #fdf0eb;">
+  <div class="container">
+    <!-- Première ligne : image à gauche, texte à droite -->
+    <div class="row align-items-center mb-5">
+      <div class="col-md-6">
+        <img src="https://cdn.pixabay.com/photo/2017/06/26/23/47/perfume-2445617_1280.jpg" 
+             alt="Parfum élégant" 
+             class="img-fluid rounded shadow">
+      </div>
+      <div class="col-md-6">
+        <h3 class="fw-bold mb-3" style="color: #c97b63;">Parfums d’Exception</h3>
+        <p class="lead text-dark">
+          Découvrez nos parfums raffinés, soigneusement sélectionnés pour un parfum unique qui vous démarque.
+        </p>
+      </div>
+    </div>
+
+    <!-- Deuxième ligne : texte à gauche, image à droite -->
+    <div class="row align-items-center">
+      <div class="col-md-6 order-md-2">
+        <img src="https://cdn.pixabay.com/photo/2016/11/22/21/57/apparel-1850804_1280.jpg" 
+             alt="Mode élégante" 
+             class="img-fluid rounded shadow">
+      </div>
+      <div class="col-md-6 order-md-1">
+        <h3 class="fw-bold mb-3" style="color: #c97b63;">Collection Mode</h3>
+        <p class="lead text-dark">
+          Exprimez votre style avec nos tenues modernes, confortables et élégantes, parfaites pour toutes les occasions.
+        </p>
+      </div>
+    </div>
+  </div>
+</section>
+
+
+
+<!-- Marketing Sections -->
+<section class="glam-section py-5 position-relative overflow-hidden">
+  <div class="container text-center position-relative" style="z-index: 2;">
+    <h2 class="fw-bold mb-4 glam-title">Laissez-vous Éblouir</h2>
+    <p class="lead mb-4 glam-text">
+      Découvrez la beauté qui vous sublime, l'élégance qui vous transforme et le style qui vous fait briller.
+    </p>
+    <p class="glam-subtext fw-semibold">
+      Parce que vous méritez de rayonner chaque jour.
+    </p>
+    <a href="{% url 'ecom_app:blog' %}" class="btn btn-lg px-5 py-2 mt-4 glam-btn-light">
+      Explorer Maintenant
+    </a>
+  </div>
+  
+  <!-- Effets brillants animés -->
+  <div class="sparkle" style="position:absolute; top:0; left:0; width:100%; height:100%; pointer-events:none; overflow:hidden;"></div>
+</section>
+
+<!-- Section Pourquoi Nous Choisir -->
+<section class="why-us py-5" style="background-color: #fdf8f6;">
+  <div class="container text-center">
+    <h2 class="fw-bold mb-5" style="color: #c97b63;">Pourquoi Nous Choisir ?</h2>
+    <div class="row justify-content-center">
+      <div class="col-md-4 mb-4">
+        <div class="p-4 shadow rounded" style="background-color: #fff;">
+          <i class="bi bi-award" style="font-size: 2rem; color: #c97b63;"></i>
+          <h5 class="fw-bold mt-3">Produits de Qualité</h5>
+          <p>Nous sélectionnons uniquement les meilleurs produits cosmétiques et vêtements pour votre satisfaction.</p>
+        </div>
+      </div>
+      <div class="col-md-4 mb-4">
+        <div class="p-4 shadow rounded" style="background-color: #fff;">
+          <i class="bi bi-truck" style="font-size: 2rem; color: #c97b63;"></i>
+          <h5 class="fw-bold mt-3">Livraison Rapide</h5>
+          <p>Profitez d’une livraison rapide et fiable partout, pour recevoir vos produits sans stress.</p>
+        </div>
+      </div>
+      <div class="col-md-4 mb-4">
+        <div class="p-4 shadow rounded" style="background-color: #fff;">
+          <i class="bi bi-hand-thumbs-up" style="font-size: 2rem; color: #c97b63;"></i>
+          <h5 class="fw-bold mt-3">Satisfaction Garantie</h5>
+          <p>Nous garantissons votre satisfaction : retours simples et assistance client à votre écoute.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+
+<!-- Section Témoignages Clients -->
+<!-- Section Témoignages Clients avec icônes -->
+<section class="testimonials py-5" style="background-color: #fff7f2;">
+  <div class="container text-center">
+    <h2 class="fw-bold mb-5" style="color: #c97b63;">Ce Que Disent Nos Clients</h2>
+    <div class="row justify-content-center">
+      
+      <div class="col-md-4 mb-4">
+        <div class="p-4 shadow rounded">
+          <i class="bi bi-chat-left-quote" style="font-size: 2.5rem; color: #c97b63;"></i>
+          <p class="mb-2 mt-3">"Des produits incroyables, livraison rapide et service client très sympa !"</p>
+          <strong>— Marie D.</strong>
+        </div>
+      </div>
+
+      <div class="col-md-4 mb-4">
+        <div class="p-4 shadow rounded">
+          <i class="bi bi-chat-left-quote" style="font-size: 2.5rem; color: #c97b63;"></i>
+          <p class="mb-2 mt-3">"Je suis fan de la qualité et du style des vêtements, je recommande à 100%."</p>
+          <strong>— Paul T.</strong>
+        </div>
+      </div>
+
+      <div class="col-md-4 mb-4">
+        <div class="p-4 shadow rounded">
+          <i class="bi bi-chat-left-quote" style="font-size: 2.5rem; color: #c97b63;"></i>
+          <p class="mb-2 mt-3">"Parfums et cosmétiques excellents, l’odeur est divine et la peau douce."</p>
+          <strong>— Amina S.</strong>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+
+
+<!-- Section Cosmétiques -->
+<!-- Section Cosmétiques -->
+<!-- Section Cosmétiques avec 4 images -->
+<section class="cosmetiques py-5" style="background-color: #fdf8f6;">
+  <div class="container text-center">
+    <h2 class="fw-bold mb-5" style="color: #c97b63;">Nos Produits Cosmétiques</h2>
+    
+    <p class="lead text-dark mb-5" style="max-width: 700px; margin: 0 auto;">
+      Découvrez notre gamme de soins enrichis aux extraits naturels.
+    </p>
+
+    <div class="row g-4 justify-content-center">
+      <div class="col-md-5">
+        <img src="{% static '/ecommerce_app/images/makup1.jpg' %}" alt="Produit 1" class="img-fluid rounded shadow">
+      </div>
+      <div class="col-md-5">
+        <img src="{% static '/ecommerce_app/images/makup2.jpg' %}" alt="Produit 2" class="img-fluid rounded shadow">
+      </div>
+      <div class="col-md-5">
+        <img src="{% static '/ecommerce_app/images/Logo.svg' %}" alt="Produit 3" class="img-fluid rounded shadow">
+      </div>
+      <div class="col-md-5">
+        <img src="{% static '/ecommerce_app/images/Logo.svg' %}" alt="Produit 4" class="img-fluid rounded shadow">
+      </div>
+    </div>
+
+  </div>
+</section>
+
+
+<!-- Section Mode -->
+<!-- Section Mode avec 4 images -->
+<section class="mode py-5" style="background-color: #fff7f2;">
+  <div class="container text-center">
+    <h2 class="fw-bold mb-5" style="color: #c97b63;">Notre Collection Mode</h2>
+    
+    <p class="lead text-dark mb-5" style="max-width: 700px; margin: 0 auto;">
+      Exprimez votre style avec nos tenues élégantes et modernes.
+    </p>
+
+    <div class="row g-4 justify-content-center">
+      <div class="col-md-5">
+        <img src="{% static '/ecommerce_app/images/dress1.jpg' %}" alt="Mode 1" class="img-fluid rounded shadow">
+      </div>
+      <div class="col-md-5">
+        <img src="{% static '/ecommerce_app/images/dress2.jpg' %}" alt="Mode 2" class="img-fluid rounded shadow">
+      </div>
+      <div class="col-md-5">
+        <img src="{% static '/ecommerce_app/images/dress3.jpg' %}" alt="Mode 3" class="img-fluid rounded shadow">
+      </div>
+      <div class="col-md-5">
+        <img src="{% static '/ecommerce_app/images/dress4.jpg' %{% static '/ecommerce_app/images/Logo.svg' %}" alt="Mode 4" class="img-fluid rounded shadow">
+      </div>
+    </div>
+
+  </div>
+</section>
+
+
+
+
+<!-- Call to Action -->
+<section class="cta-section text-center py-5" style="background-color: #fff7f2;">
+    <div class="container">
+        <h2 class="fw-bold mb-3" style="color: #c97b63;">Prêt à découvrir votre style ?</h2>
+        <p class="text-dark mb-4">Explorez notre collection exclusive et laissez-vous séduire par des produits uniques.</p>
+        <a href="{% url 'ecom_app:blog' %}" class="btn btn-lg px-5 py-2" style="background-color: #c97b63; color: white; border-radius: 50px; font-weight: 600;">
+            Explorer maintenant
+        </a>
+    </div>
+</section>
+
+{% endblock %}

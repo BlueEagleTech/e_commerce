@@ -1,56 +1,116 @@
 {% extends 'ecommerce_app/vendeur_dashboard.html' %}
 
 {% block content %}
-<h2>Liste des commandes</h2>
+<h2 class="mb-4" style="color: var(--marron-clair); font-weight: 600;">Liste des commandes</h2>
 
-<table class="table table-striped">
-    <thead>
-        <tr>
-            <th>#</th>
-            <th>Client</th>
-            <th>Adresse</th>
-            <th>Date commande</th>
-            <th>Statut</th>
-            <th>Date livraison</th>
-            <th>Actions</th>
-        </tr>
+{% if commandes %}
+<div class="table-responsive shadow-sm rounded-3" style="background: #fff;">
+  <table class="table align-middle mb-0">
+    <thead style="background: var(--rose); color: white;">
+      <tr>
+        <th>#</th>
+        <th>Client</th>
+        <th>Adresse</th>
+        <th>Téléphone</th>
+        <th>Date commande</th>
+        <th>Statut</th>
+        <th>Date livraison</th>
+        <th class="text-center">Actions</th>
+      </tr>
     </thead>
     <tbody>
-        {% for commande in commandes %}
-        <tr>
-            <td>{{ commande.id }}</td>
-            <td>{{ commande.user.username }}</td>
-            <td>{{ commande.user.profile.address }}</td>
-            <td>{{ commande.ordered_at|date:"d/m/Y H:i" }}</td>
-            <td>
-                {% if commande.is_delivered %}
-                    <span class="badge bg-success">Livré</span>
-                {% elif commande.is_ordered %}
-                    <span class="badge bg-warning text-dark">En attente</span>
-                {% else %}
-                    <span class="badge bg-secondary">Non confirmé</span>
-                {% endif %}
-            </td>
-            <td>
-                {% if commande.delivered_at %}
-                    {{ commande.delivered_at|date:"d/m/Y H:i" }}
-                {% else %}
-                    -
-                {% endif %}
-            </td>
-            <td>
-                {% if not commande.is_delivered and commande.is_ordered %}
-                <form method="post" style="display:inline;">
-                    {% csrf_token %}
-                    <input type="hidden" name="cart_id" value="{{ commande.id }}">
-                    <button type="submit" class="btn btn-success btn-sm">Marquer livré</button>
-                </form>
-                {% else %}
-                    -
-                {% endif %}
-            </td>
-        </tr>
-        {% endfor %}
+      {% for commande in commandes %}
+<tr style="transition: background 0.2s ease;">
+    <td>{{ commande.id }}</td>
+    <td>
+      {% if commande.user %}
+        {{ commande.user.username }}
+      {% else %}
+        {{ commande.guest_name|default:"Invité" }}
+      {% endif %}
+    </td>
+    <td>
+      {% if commande.user %}
+        {{ commande.user.profile.address }}
+      {% else %}
+        {{ commande.guest_address|default:"-" }}
+      {% endif %}
+    </td>
+    <td>
+      {% if commande.user %}
+        {{ commande.user.profile.numero }}
+      {% else %}
+        {{ commande.guest_phone|default:"-" }}
+      {% endif %}
+    </td>
+    <td>{{ commande.ordered_at|date:"d/m/Y H:i" }}</td>
+    <td>
+      {% if commande.is_delivered %}
+        <span class="badge" style="background: #b7d3c6; color: #1d5a47;">Livré</span>
+      {% elif commande.is_ordered %}
+        <span class="badge" style="background: #fce5c4; color: #9c6a00;">En attente</span>
+      {% else %}
+        <span class="badge bg-secondary">Non confirmé</span>
+      {% endif %}
+    </td>
+    <td>
+      {% if commande.delivered_at %}
+        {{ commande.delivered_at|date:"d/m/Y H:i" }}
+      {% else %}
+        <span class="text-muted">-</span>
+      {% endif %}
+    </td>
+    <td class="text-center">
+      {% if not commande.is_delivered and commande.is_ordered %}
+        <form method="post" style="display:inline;">
+          {% csrf_token %}
+          <input type="hidden" name="cart_id" value="{{ commande.id }}">
+          <button type="submit" class="btn btn-sm px-3"
+            style="background: var(--marron-clair); color: white; border: none; border-radius: 8px;">
+            <i class="bi bi-check-circle"></i> Marquer livré
+          </button>
+        </form>
+      {% else %}
+        <span class="text-muted">-</span>
+      {% endif %}
+    </td>
+</tr>
+
+<!-- Lignes pour chaque produit dans la commande -->
+<tr>
+    <td colspan="8" style="padding: 0;">
+        <table class="table mb-0">
+            <thead>
+                <tr style="background-color: #f9ece6;">
+                    <th>Produit</th>
+                    <th>Quantité</th>
+                    <th>Prix unitaire</th>
+                    <th>Total</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for item in commande.items.all %}
+                <tr>
+                    <td>{{ item.product.name }}</td>
+                    <td>{{ item.quantity }}</td>
+                    <td>{{ item.product.price }} €</td>
+                    <td>{{ item.get_total_price }} €</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </td>
+</tr>
+
+{% endfor %}
+
     </tbody>
-</table>
+  </table>
+</div>
+{% else %}
+  <div class="alert alert-light text-center border-0 shadow-sm mt-3" 
+       style="background: var(--beige); color: var(--marron-clair);">
+    <i class="bi bi-info-circle"></i> Aucune commande trouvée.
+  </div>
+{% endif %}
 {% endblock %}

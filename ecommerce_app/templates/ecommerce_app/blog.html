@@ -1,0 +1,46 @@
+{% extends 'ecommerce_app/base.html' %}
+{% block title %}Produits - Téranga Beauté{% endblock %}
+
+{% block content %}
+<h1 class="text-center mb-5" style="color:#c97b63; font-family: 'Playfair Display', serif; font-size:3rem; font-weight:700;">Nos Produits</h1>
+
+<div class="row g-4 mb-5">
+    {% for produit in produits %}
+    <div class="col-md-4">
+        <div class="card shadow-sm border-0" style="background-color:#fff5f2; border-radius:20px; overflow:hidden; transition: transform 0.3s;">
+            {% if produit.images %}
+            <img src="{{ produit.images.url }}" alt="{{ produit.name }}" class="card-img-top" style="height:250px; object-fit:cover; transition: transform 0.3s;">
+            {% endif %}
+            <div class="card-body text-center">
+                <h5 class="card-title" style="color:#c97b63; font-weight:700; font-family: 'Playfair Display', serif; font-size:1.3rem;">{{ produit.name }}</h5>
+                <p class="card-text" style="color:#555; font-weight:500;"><strong>Prix :</strong> {{ produit.price }} F CFA</p>
+                {% if produit.featured %}
+                    <span class="badge bg-warning text-dark mb-2 animate__animated animate__pulse" style="font-weight:600;">Produit en avant</span>
+                {% endif %}
+                <div class="d-flex justify-content-center gap-2 mt-3">
+                    <a href="{% url 'ecom_app:détail' produit.id %}" class="btn" style="background-color:#c97b63; color:white; border-radius:10px; padding:5px 15px; font-weight:600;">Voir plus</a>
+                    <a href="{% url 'ecom_app:achat' produit.id %}" class="btn" style="background-color:#c97b63; color:white; border-radius:10px; padding:5px 15px; font-weight:600;">Ajouter au panier</a>
+                </div>
+            </div>
+        </div>
+    </div>
+    {% endfor %}
+</div>
+
+<style>
+.card:hover {
+    transform: translateY(-5px) scale(1.02);
+}
+.card-img-top:hover {
+    transform: scale(1.05);
+}
+@keyframes pulse {
+    0% { transform: scale(1); }
+    50% { transform: scale(1.1); }
+    100% { transform: scale(1); }
+}
+.badge.animate__pulse {
+    animation: pulse 1.5s infinite;
+}
+</style>
+{% endblock %}

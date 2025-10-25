@@ -1,43 +1,71 @@
-
 {% extends 'ecommerce_app/vendeur_dashboard.html' %}
 
 {% block content %}
-<h2>
-    liste des produits
-</h2>
+<h1 class="text-center mb-4" style="color:#c97b63;">Gestion des Produits</h1>
+
+<div class="text-center mb-4">
+    <a href="{% url 'ecom_app:ajout' %}" 
+       class="btn btn-lg px-4 py-2" 
+       style="
+           background-color:#f2c7b3; 
+           color:#fff; 
+           border:none; 
+           border-radius:30px; 
+           font-weight:600;
+           box-shadow:0 5px 15px rgba(0,0,0,0.1);
+           transition: all 0.3s ease;
+       "
+       onmouseover="this.style.backgroundColor='#c97b63'; this.style.transform='scale(1.05)'"
+       onmouseout="this.style.backgroundColor='#f2c7b3'; this.style.transform='scale(1)'">
+       + Ajouter un produit
+    </a>
+</div>
+
 <div class="row">
-{% for product in products %}
-<div class="col-md-4 mb-4">
-     <div class="card h-100 shadow-sm border-primary">
-    {% if product.images %}
-    <img src="{{ product.images.url }}" class="card-img-top" alt="{{ product.name }}">
-    {% endif %}
-    
-    <div class="card-body">
-      <h5 class="card-title">{{ product.name }}</h5>
-      <p class="card-text text-muted">{{ product.description|truncatechars:100 }}</p>
-      <p class="card-text"><strong>Prix:</strong> {{ product.price }} F CFA</p>
-      <p class="card-text"><strong>Stock:</strong> {{ product.stock }}</p>
-      
-      <a href="{% url 'ecom_app:détail' product.id %}" class="btn btn-outline-info btn-sm">
-        Voir plus
-      </a>
+    {% for produit in produits %}
+    <div class="col-md-4">
+        <div class="card" 
+             style="
+                 background-color: #fff5f2; 
+                 border-radius:15px; 
+                 margin-bottom:20px; 
+                 box-shadow: 0 8px 20px rgba(0,0,0,0.1);
+             ">
+            {% if produit.images %}
+            <img src="{{ produit.images.url }}" 
+                 class="card-img-top" 
+                 alt="{{ produit.name }}" 
+                 style="
+                     height:200px; 
+                     object-fit:cover; 
+                     border-top-left-radius:15px; 
+                     border-top-right-radius:15px;
+                 ">
+            {% endif %}
+            <div class="card-body">
+                <h5 class="card-title" style="color:#c97b63; font-weight:600;">
+                    {{ produit.name }}
+                </h5>
+                <p class="card-text"><strong>Catégorie :</strong> {{ produit.category }}</p>
+                <p class="card-text"><strong>Prix :</strong> {{ produit.price }} F CFA</p>
+                <p class="card-text"><strong>Stock :</strong> {{ produit.stock }}</p>
+                {% if produit.featured %}
+                <span class="badge bg-warning text-dark">Produit en avant</span>
+                {% endif %}
 
-      {% if user.is_authenticated and user.profile.role == 'vendeur' or user.profile.role == 'admin' %}
-      <div class="d-flex gap-2 mt-3">
-        <a href="{% url 'ecom_app:update' product.id %}" class="btn btn-primary btn-sm">
-          Modifier
-        </a>
-        <a href="{% url 'ecom_app:delete' product.id %}" class="btn btn-danger btn-sm">
-          Supprimer
-        </a>
-      </div>
-      {% endif %}
+                {% if user.is_authenticated and user.profile.role == 'vendeur' %}
+                <div class="d-flex gap-2 mt-3">
+                    <a href="{% url 'ecom_app:update' produit.id %}" 
+                       class="btn btn-sm" 
+                       style="background-color:#c97b63; color:white; border:none;">Modifier</a>
+                    <a href="{% url 'ecom_app:delete' produit.id %}" 
+                       class="btn btn-sm" 
+                       style="background-color:#e86f5c; color:white; border:none;">Supprimer</a>
+                </div>
+                {% endif %}
+            </div>
+        </div>
     </div>
-  </div> 
+    {% endfor %}
 </div>
-{% endfor %}
-</div>
-
-
 {% endblock %}

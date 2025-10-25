@@ -1,0 +1,60 @@
+{% extends 'ecommerce_app/base.html' %}
+
+{% block title %}Contact - Teranga Beauté{% endblock %}
+
+{% block content %}
+<div class="container py-5" style="max-width: 800px;">
+  
+  <!-- Section commentaires existants -->
+  <h2 class="text-center mb-4" style="color: #8C4A4A;">Vos messages</h2>
+  <div class="mb-5">
+    {% for commentaire in commentaire %}
+      <div class="p-4 mb-3 rounded shadow-sm" 
+           style="background-color: #fffaf8; border-left: 4px solid #e7b8a0;">
+        <h5 style="color: #8C4A4A; margin-bottom: 0;">{{ commentaire.nom }}</h5>
+        <small style="color: #b58c82;">{{ commentaire.email }} – {{ commentaire.created_at|date:"d M Y H:i" }}</small>
+        <p class="mt-2 mb-0" style="color: #333;">{{ commentaire.message }}</p>
+      </div>
+    {% empty %}
+      <p class="text-center text-muted">Aucun commentaire pour le moment 💬</p>
+    {% endfor %}
+  </div>
+
+  <!-- Section formulaire -->
+  <div class="p-4 rounded shadow-sm" style="background-color: #fffaf8;">
+    <h3 class="text-center mb-4" style="color: #8C4A4A;">Laisser un commentaire</h3>
+
+    <form action="{% url 'ecom_app:Commentaire' %}" method="post">
+      {% csrf_token %}
+
+      <div class="form-group mb-3">
+        <label for="nom" class="form-label fw-bold" style="color: #8C4A4A;">Nom</label>
+        <input type="text" name="nom" id="nom" class="form-control border-0 shadow-sm"
+               style="background-color: #fbeee6;" placeholder="Votre nom">
+      </div>
+
+      <div class="form-group mb-3">
+        <label for="email" class="form-label fw-bold" style="color: #8C4A4A;">Email</label>
+        <input type="email" name="email" id="email" class="form-control border-0 shadow-sm"
+               style="background-color: #fbeee6;" placeholder="Votre adresse email">
+      </div>
+
+      <div class="form-group mb-3">
+        <label for="message" class="form-label fw-bold" style="color: #8C4A4A;">Message</label>
+        <textarea name="message" id="message" cols="30" rows="6"
+                  class="form-control border-0 shadow-sm"
+                  style="background-color: #fbeee6;"
+                  placeholder="Écrivez votre message ici..."></textarea>
+      </div>
+
+      <div class="text-center">
+        <button type="submit" class="btn px-5 py-2" 
+                style="background-color: #e7b8a0; color: white; border-radius: 30px; font-weight: 600;">
+          Envoyer 💌
+        </button>
+      </div>
+    </form>
+  </div>
+
+</div>
+{% endblock %}

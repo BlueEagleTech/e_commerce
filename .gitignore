@@ -1,0 +1,19 @@
+# Fichiers Python compilés
+*.pyc
+__pycache__/
+
+# Fichiers de configuration locale
+.env
+
+# Virtualenv (si tu as un dossier venv)
+venv/
+env/
+
+# Fichiers SQLite locaux
+db.sqlite3
+
+# Logs
+*.log
+
+# Dossier static collecté
+/media/

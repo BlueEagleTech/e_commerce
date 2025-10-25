@@ -1,30 +1,31 @@
 {% extends 'ecommerce_app/vendeur_dashboard.html' %}
 
 {% block content %}
-<h2 class="mb-4">Liste des clients</h2>
+<h2 class="mb-4" style="color: var(--marron-clair); font-weight: 600;">Liste des clients</h2>
 
 {% if clients %}
-  <div class="table-responsive">
-    <table class="table table-hover table-bordered align-middle">
-      <thead class="table-primary">
+  <div class="table-responsive shadow-sm rounded-3" style="background: #fff;">
+    <table class="table align-middle mb-0">
+      <thead style="background: var(--rose); color: white;">
         <tr>
           <th scope="col">ID</th>
           <th scope="col">Nom d'utilisateur</th>
           <th scope="col">Email</th>
           <th scope="col">Date d'inscription</th>
-          <th scope="col">Actions</th>
+          <th scope="col" class="text-center">Actions</th>
         </tr>
       </thead>
       <tbody>
         {% for client in clients %}
-        <tr>
+        <tr style="transition: background 0.2s;">
           <td>{{ client.id }}</td>
           <td>{{ client.username }}</td>
           <td>{{ client.email }}</td>
           <td>{{ client.date_joined|date:"d/m/Y" }}</td>
-          <td>
-            <a href="#" class="btn btn-info btn-sm">
-              Voir détails
+          <td class="text-center">
+            <a href="#" class="btn btn-outline-secondary btn-sm px-3"
+               style="border-color: var(--rose); color: var(--marron-clair);">
+              <i class="bi bi-eye"></i> Voir
             </a>
           </td>
         </tr>
@@ -33,6 +34,9 @@
     </table>
   </div>
 {% else %}
-  <p class="text-muted">Aucun client trouvé.</p>
+  <div class="alert alert-light text-center border-0 shadow-sm" 
+       style="background: var(--beige); color: var(--marron-clair);">
+    <i class="bi bi-info-circle"></i> Aucun client trouvé.
+  </div>
 {% endif %}
 {% endblock %}

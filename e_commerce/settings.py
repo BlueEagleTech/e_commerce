@@ -12,6 +12,41 @@ https://docs.djangoproject.com/en/5.1/ref/settings/
 
 from pathlib import Path
 import os
+from dotenv import load_dotenv
+
+# Application definition
+
+INSTALLED_APPS = [
+    'django.contrib.admin',
+    'django.contrib.auth',
+    'django.contrib.contenttypes',
+    'django.contrib.sessions',
+    'django.contrib.messages',
+    'django.contrib.staticfiles',
+    'ecommerce_app',
+    'rest_framework',
+    'widget_tweaks',
+    'axes',
+]
+
+MIDDLEWARE = [
+    'axes.middleware.AxesMiddleware',
+    'django.middleware.security.SecurityMiddleware',
+    'django.contrib.sessions.middleware.SessionMiddleware',
+    'django.middleware.common.CommonMiddleware',
+    'django.middleware.csrf.CsrfViewMiddleware',
+    'django.contrib.auth.middleware.AuthenticationMiddleware',
+    'django.contrib.messages.middleware.MessageMiddleware',
+    'django.middleware.clickjacking.XFrameOptionsMiddleware',
+]
+
+
+MIDDLEWARE.insert(0, 'axes.middleware.AxesMiddleware')
+
+AXES_FAILURE_LIMIT = 5           # Bloque après 5 tentatives échouées
+AXES_COOLOFF_TIME = 1            # Temps de blocage en heures
+AXES_LOCKOUT_TEMPLATE = 'registration/account_locked.html'  # page custom (optionnel)
+AXES_USE_USER_AGENT = True 
 
 ADMIN_EMAIL = 'tafsirmoctar.ba@unchk.edu.sn'  # L'email de l'admin
 
@@ -24,7 +59,7 @@ EMAIL_HOST_PASSWORD = 'caovdmtphodpuemz'  # Ton mot de passe (ou un mot de passe
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
-
+load_dotenv(os.path.join(BASE_DIR,'.env'))
 
 MEDIA_URL = '/media/'
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
@@ -33,7 +68,7 @@ MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 
 LOGIN_REDIRECT_URL = '/'  # ou '/home' ou toute autre URL vers laquelle tu veux rediriger
 
-
+LOGIN_URL = 'ecom_app:connexion'
 
 
 
@@ -41,43 +76,53 @@ LOGIN_REDIRECT_URL = '/'  # ou '/home' ou toute autre URL vers laquelle tu veux 
 # See https://docs.djangoproject.com/en/5.1/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'django-insecure-$s@9=k8!o1bkpb959c6z@&!i7k&px@@ut-40a19+&%rxwcpa!1'
+SECRET_KEY = os.getenv('SECRET_KEY', 'dev-secret-key-local')
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG =os.getenv('DEBUG', 'True') == 'True'
+# ---------------------------
+# Sécurité cookies, HTTPS et headers
+# ---------------------------
 
-ALLOWED_HOSTS = []
+# Détecte si on est en local ou en production
+IS_LOCAL = DEBUG  # True si DEBUG=True, False si DEBUG=False
+
+# Cookies sécurisés
+CSRF_COOKIE_SECURE = not IS_LOCAL
+SESSION_COOKIE_SECURE = not IS_LOCAL
+CSRF_COOKIE_HTTPONLY = True  # On peut garder toujours True
+
+# Redirection HTTP -> HTTPS
+SECURE_SSL_REDIRECT = not IS_LOCAL
+
+# HSTS (force HTTPS côté navigateur)
+SECURE_HSTS_SECONDS = 31536000 if not IS_LOCAL else 0  # 1 an en prod, 0 en local
+SECURE_HSTS_INCLUDE_SUBDOMAINS = not IS_LOCAL
+SECURE_HSTS_PRELOAD = not IS_LOCAL
+
+# Headers de sécurité côté navigateur
+SECURE_BROWSER_XSS_FILTER = True
+SECURE_CONTENT_TYPE_NOSNIFF = True
+
+# Protection clickjacking
+X_FRAME_OPTIONS = 'DENY'
 
 
-# Application definition
 
-INSTALLED_APPS = [
-    'django.contrib.admin',
-    'django.contrib.auth',
-    'django.contrib.contenttypes',
-    'django.contrib.sessions',
-    'django.contrib.messages',
-    'django.contrib.staticfiles',
-    'ecommerce_app',
-    'rest_framework'
-]
+ALLOWED_HOSTS = os.getenv('ALLOWED_HOSTS', 'localhost,127.0.0.1').split(',')
 
-MIDDLEWARE = [
-    'django.middleware.security.SecurityMiddleware',
-    'django.contrib.sessions.middleware.SessionMiddleware',
-    'django.middleware.common.CommonMiddleware',
-    'django.middleware.csrf.CsrfViewMiddleware',
-    'django.contrib.auth.middleware.AuthenticationMiddleware',
-    'django.contrib.messages.middleware.MessageMiddleware',
-    'django.middleware.clickjacking.XFrameOptionsMiddleware',
-]
+
+
+
+
+
 
 ROOT_URLCONF = 'e_commerce.urls'
 
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [],
+        'DIRS': [BASE_DIR / 'templates'],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
@@ -119,6 +164,9 @@ AUTH_PASSWORD_VALIDATORS = [
     },
     {
         'NAME': 'django.contrib.auth.password_validation.MinimumLengthValidator',
+        'OPTIONS': {
+            'min_length': 8,  # minimum 8 caractères
+        }
     },
     {
         'NAME': 'django.contrib.auth.password_validation.CommonPasswordValidator',
@@ -145,7 +193,7 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/5.1/howto/static-files/
 
 STATIC_URL = 'static/'
-STATICFILES_DIRS = ['static']
+STATICFILES_DIRS = [os.path.join(BASE_DIR,'static')]
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/5.1/ref/settings/#default-auto-field
