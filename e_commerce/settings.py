@@ -55,7 +55,7 @@ EMAIL_HOST = 'smtp.gmail.com'
 EMAIL_PORT = 587
 EMAIL_USE_TLS = True
 EMAIL_HOST_USER = 'tafsirmoctar.ba@unchk.edu.sn'  # Ton adresse email
-EMAIL_HOST_PASSWORD = 'caovdmtphodpuemz'  # Ton mot de passe (ou un mot de passe d'application pour plus de sécurité)
+EMAIL_HOST_PASSWORD = 'utedtnfaneaiqtsr'  # Ton mot de passe (ou un mot de passe d'application pour plus de sécurité)
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent

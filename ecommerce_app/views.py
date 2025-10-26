@@ -16,8 +16,7 @@ from django.contrib import messages
 #DASHBOARD
 @login_required
 def dashboard(request):
-    if request.user.is_staff:
-         if request.user.profile.role in ['vendeur', 'admin']:
+    if request.user.profile.role in ['vendeur', 'admin']:
             total_products = Product.objects.count()
             total_clients = User.objects.count()
             produits = Product.objects.all()
