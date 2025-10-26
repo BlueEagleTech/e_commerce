@@ -41,6 +41,11 @@ MIDDLEWARE = [
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
 
+AUTHENTICATION_BACKENDS = [
+    'axes.backends.AxesStandaloneBackend',  # nouveau nom
+    'django.contrib.auth.backends.ModelBackend',  # toujours garder le backend par défaut
+]
+
 MIDDLEWARE.insert(0, 'axes.middleware.AxesMiddleware')
 
 # Email
