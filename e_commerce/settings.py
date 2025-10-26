@@ -17,7 +17,7 @@ DEBUG = os.getenv('DEBUG', 'True') == 'True'
 
 ALLOWED_HOSTS = os.getenv(
     'ALLOWED_HOSTS',
-    'localhost,127.0.0.1,web-production-db964.up.railway.app'
+    ' ecommerce-production-66b6.up.railway.app'
 ).split(',')
 
 # ========================
