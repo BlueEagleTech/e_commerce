@@ -31,7 +31,7 @@ INSTALLED_APPS = [
 ]
 
 MIDDLEWARE = [
-    'axes.middleware.AxesMiddleware',
+    'axes.middleware.AxesStandaloneBackend',
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
@@ -77,16 +77,18 @@ DATABASE_URL = os.getenv('DATABASE_URL')
 if DATABASE_URL:
     DATABASES = {'default': dj_database_url.parse(DATABASE_URL, conn_max_age=600)}
 else:
-    DATABASES = {
-        'default': {
-            'ENGINE': 'django.db.backends.postgresql',
-            'NAME':'e_commerce_db',
-            'USER':'e_user_admin',
-            'PASSWORD':'sas1539trans',
-            'HOST':'localhost',
-            'PORT':'5432',
-        }
+   DATABASES = {
+    'default': {
+        'ENGINE': 'django.db.backends.postgresql',
+        'NAME': os.environ.get('DB_NAME', 'e_commerce_db'),
+        'USER': os.environ.get('DB_USER', 'e_user_admin'),
+        'PASSWORD': os.environ.get('DB_PASSWORD', 'sas1539trans'),
+        'HOST': os.environ.get('DB_HOST', 'containers-us-west-123.railway.app'),
+        'PORT': os.environ.get('DB_PORT', '5432'),
     }
+}
+
+    
 
 # Auth
 LOGIN_REDIRECT_URL = '/'
