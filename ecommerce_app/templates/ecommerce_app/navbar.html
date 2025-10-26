@@ -9,30 +9,43 @@
       Téranga Beauté
     </a>
 
-    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav"
-      aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+    <!-- Bouton hamburger (visible uniquement sur mobile) -->
+    <button class="btn btn-outline-dark menu-btn d-lg-none" id="menuToggle">
       <span class="navbar-toggler-icon"></span>
     </button>
 
+    <!-- Menu flottant latéral -->
+    <div class="floating-drawer" id="floatingMenu">
+      <div class="drawer-content">
+        <a href="{% url 'ecom_app:index' %}">Accueil</a>
+        <a href="{% url 'ecom_app:blog' %}">Produits</a>
+        <a href="{% url 'ecom_app:Contact' %}">Contact</a>
+        <a href="{% url 'ecom_app:A_propos' %}">À propos</a>
+        <a href="{% url 'ecom_app:panier' %}">Mon panier</a>
+
+        {% if user.is_authenticated %}
+          <form action="{% url 'ecom_app:déconnexion' %}" method="post">
+            {% csrf_token %}
+            <button type="submit">Déconnexion</button>
+          </form>
+        {% else %}
+          <a href="{% url 'ecom_app:connexion' %}">Se connecter</a>
+        {% endif %}
+      </div>
+    </div>
+
+    <!-- Menu principal pour ordinateur -->
     <div class="collapse navbar-collapse side-collapse" id="navbarNav">
       <ul class="navbar-nav ms-auto align-items-center">
-        <li class="nav-item">
-          <a class="nav-link" href="{% url 'ecom_app:index' %}">Accueil</a>
-        </li>
-        <li class="nav-item">
-          <a class="nav-link" href="{% url 'ecom_app:blog' %}">Produits</a>
-        </li>
-        <li class="nav-item">
-          <a class="nav-link" href="{% url 'ecom_app:Contact' %}">Contact</a>
-        </li>
-        <li class="nav-item">
-          <a class="nav-link" href="{% url 'ecom_app:A_propos' %}">A propos</a>
-        </li>
+        <li class="nav-item"><a class="nav-link" href="{% url 'ecom_app:index' %}">Accueil</a></li>
+        <li class="nav-item"><a class="nav-link" href="{% url 'ecom_app:blog' %}">Produits</a></li>
+        <li class="nav-item"><a class="nav-link" href="{% url 'ecom_app:Contact' %}">Contact</a></li>
+        <li class="nav-item"><a class="nav-link" href="{% url 'ecom_app:A_propos' %}">À propos</a></li>
         <li class="nav-item me-2">
-            <a href="{% url 'ecom_app:panier' %}" class="btn glam-btn">Panier <i class="bi bi-cart"></i></a>
-          </li>
+          <a href="{% url 'ecom_app:panier' %}" class="btn glam-btn">Panier <i class="bi bi-cart"></i></a>
+        </li>
+
         {% if user.is_authenticated %}
-          
           {% if user.profile.role == 'vendeur' or user.profile.role == 'admin' %}
             <li class="nav-item me-2">
               <a href="{% url 'ecom_app:ajout' %}" class="btn glam-btn">Ajouter produit</a>
@@ -46,7 +59,6 @@
           </li>
         {% else %}
           <li class="nav-item me-2">
-            <!-- Correction ici 👇 -->
             <a href="{% url 'ecom_app:connexion' %}" class="btn glam-btn">Se connecter</a>
           </li>
         {% endif %}
@@ -55,23 +67,46 @@
   </div>
 </nav>
 
+<!-- Overlay pour fond flou -->
+<div class="menu-overlay" id="menuOverlay"></div>
+
+<script>
+  const toggleBtn = document.getElementById('menuToggle');
+  const floatingMenu = document.getElementById('floatingMenu');
+  const overlay = document.getElementById('menuOverlay');
+
+  toggleBtn.addEventListener('click', (e) => {
+    e.stopPropagation();
+    floatingMenu.classList.toggle('active');
+    overlay.style.display = floatingMenu.classList.contains('active') ? 'block' : 'none';
+    document.body.classList.toggle('menu-open');
+  });
+
+  // Ferme le menu si on clique à l’extérieur
+  document.addEventListener('click', (e) => {
+    if (!floatingMenu.contains(e.target) && e.target !== toggleBtn) {
+      floatingMenu.classList.remove('active');
+      overlay.style.display = 'none';
+      document.body.classList.remove('menu-open');
+    }
+  });
+
+  overlay.addEventListener('click', () => {
+    floatingMenu.classList.remove('active');
+    overlay.style.display = 'none';
+    document.body.classList.remove('menu-open');
+  });
+</script>
+
 <style>
+/* ==== STYLES NAVBAR ==== */
 .navbar-glam {
   background: linear-gradient(90deg, #fce9e4, #fdf0eb, #e3b7a0);
   box-shadow: 0 4px 15px rgba(0,0,0,0.1);
   border-radius: 0 0 15px 15px;
-  transition: background 0.5s ease;
-}
-.navbar-brand {
-  font-family: 'Great Vibes', serif;
-  font-weight: 700;
-  letter-spacing: -1px;
-  background: linear-gradient(90deg, #000, #caa482, #000);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
 }
 
-.navbar-glam .navbar-brand {
+.navbar-brand {
   font-family: 'Great Vibes', cursive;
   font-size: 1.8rem;
   letter-spacing: 1px;
@@ -86,61 +121,90 @@
   100% { text-shadow: 0 0 5px #fff, 0 0 10px #fff; }
 }
 
-.navbar-glam .navbar-brand:hover {
-  color: #c98a77;
-  text-shadow: 0 2px 5px rgba(19, 19, 18, 0.5);
-}
-
 .navbar-glam .nav-link {
   color: #4a3326;
   font-weight: 500;
-  position: relative;
-  transition: color 0.3s, transform 0.3s;
+  transition: all 0.3s;
 }
 .navbar-glam .nav-link:hover {
   color: #c97b63;
   transform: translateY(-2px);
 }
 
-/* === BOUTONS SOMBRES === */
+/* ==== BOUTONS CHICS ==== */
 .glam-btn {
-  background: linear-gradient(45deg, #2f2f2f, #1e1e1e, #000);
-  color: #c97b63;
+  background: linear-gradient(135deg, #fbe9e1, #f5d2c3, #f7e3d6);
+  color: #4a2f25;
   font-weight: 600;
   border-radius: 50px;
-  border: none;
-  box-shadow: 0 5px 10px rgba(0,0,0,0.4);
-  transition: transform 0.3s ease, box-shadow 0.3s ease, background 0.3s ease;
-  position: relative;
-  overflow: hidden;
+  border: 1px solid #caa482;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.15);
+  transition: all 0.3s;
 }
-
 .glam-btn:hover {
-  background: linear-gradient(45deg, #444, #2c2c2c, #000);
-  transform: scale(1.05);
-  box-shadow: 0 8px 20px rgba(0,0,0,0.6);
-  color: #fdf0eb;
+  background: linear-gradient(135deg, #f9d4c0, #f1b9a0, #fce9e4);
+  transform: translateY(-2px);
+  box-shadow: 0 8px 20px rgba(0,0,0,0.25);
 }
 
-/* Effet doré subtil */
-.glam-btn:hover::after {
-  content: '';
-  position: absolute;
+/* ==== MENU FLOTTANT ==== */
+.floating-drawer {
+  position: fixed;
+  top: 0;
+  right: 0;
+  width: 50%;
+  height: 100vh;
+  background: linear-gradient(135deg, #fffdfc, #fbe9e1, #f9d4c0);
+  box-shadow: -4px 0 25px rgba(0,0,0,0.3);
+  border-top-left-radius: 20px;
+  border-bottom-left-radius: 20px;
+  transform: translateX(100%);
+  transition: transform 0.4s ease;
+  z-index: 2000;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  padding: 40px 30px;
+}
+.floating-drawer.active {
+  transform: translateX(0);
+}
+
+.drawer-content {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+.drawer-content a,
+.drawer-content button {
+  text-decoration: none;
+  color: #3a2a20;
+  font-size: 1.3rem;
+  font-weight: 500;
+  background: none;
+  border: none;
+  text-align: left;
+  transition: 0.3s;
+}
+.drawer-content a:hover,
+.drawer-content button:hover {
+  color: #c97b63;
+  transform: translateX(5px);
+}
+
+/* Overlay sombre */
+.menu-overlay {
+  position: fixed;
   top: 0; left: 0;
   width: 100%; height: 100%;
-  border-radius: 50px;
-  box-shadow: 0 0 15px 3px rgba(255, 215, 0, 0.3);
-  opacity: 0.6;
-  pointer-events: none;
-  transition: opacity 0.3s ease;
+  background: rgba(0,0,0,0.4);
+  backdrop-filter: blur(3px);
+  display: none;
+  z-index: 1500;
 }
 
-/* Bouton déconnexion rouge doux */
-.btn-outline-danger.glam-btn {
-  background: linear-gradient(45deg, #640000, #8a1c1c);
-  color: #c97b63;
-}
-.btn-outline-danger.glam-btn:hover {
-  background: linear-gradient(45deg, #8a1c1c, #a62c2c);
+/* Cacher le bouton hamburger sur PC */
+@media (min-width: 992px) {
+  .menu-btn { display: none !important; }
 }
 </style>
