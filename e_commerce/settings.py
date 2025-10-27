@@ -95,18 +95,23 @@ TEMPLATES = [
 # ========================
 # DATABASE (Local / Prod)
 # ========================
-DATABASE_URL = os.getenv('DATABASE_URL')
-if DATABASE_URL:
-    DATABASES = {
-        'default': dj_database_url.parse(DATABASE_URL, conn_max_age=600)
+ENVIRONMENT = os.getenv('ENVIRONMENT', 'local')
+POSTGRES_LOCALLY = False  # mets True si tu veux tester PostgreSQL localement
+
+DATABASES = {
+    'default': {
+        'ENGINE': 'django.db.backends.sqlite3',
+        'NAME': BASE_DIR / 'db.sqlite3',
     }
-else:
-    DATABASES = {
-        'default': {
-            'ENGINE': 'django.db.backends.sqlite3',
-            'NAME': BASE_DIR / 'db.sqlite3',
-        }
-    }
+}
+
+if ENVIRONMENT == 'production' or POSTGRES_LOCALLY:
+    DATABASE_URL = os.getenv('DATABASE_URL')
+    if DATABASE_URL:
+        DATABASES['default'] = dj_database_url.parse(DATABASE_URL)
+    else:
+        print("⚠️ Attention : DATABASE_URL n'est pas défini, utilisation de SQLite par défaut.")
+
 # ========================
 # AUTH / LOGIN
 # ========================
