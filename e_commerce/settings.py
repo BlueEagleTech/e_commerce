@@ -117,7 +117,7 @@ TEMPLATES = [
 # DATABASE (Local / Prod)
 # ========================
 ENVIRONMENT = os.getenv('ENVIRONMENT', 'local')
-POSTGRES_LOCALLY = False  # mets True si tu veux tester PostgreSQL localement
+POSTGRES_LOCALLY = True  # mets True si tu veux tester PostgreSQL localement
 
 DATABASES = {
     'default': {
