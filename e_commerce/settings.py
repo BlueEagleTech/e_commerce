@@ -17,7 +17,7 @@ DEBUG = os.getenv('DEBUG', 'True') == 'True'
 
 ALLOWED_HOSTS = os.getenv(
     'ALLOWED_HOSTS',
-    'e-commerce-8tpp.onrender.com'
+    'e-commerce-8tpp.onrender.com','commerce électronique-production-723a.up.railway.app'
 ).split(',')
 
 # ========================
