@@ -1,6 +1,9 @@
 from pathlib import Path
 import os
 import dj_database_url
+from datetime import timedelta
+from django.utils import timezone
+
 
 # Charger dotenv localement
 if os.path.exists('.env'):
@@ -58,6 +61,22 @@ STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
 AUTHENTICATION_BACKENDS = [
     'axes.backends.AxesStandaloneBackend',  # nouveau nom Axes
     'django.contrib.auth.backends.ModelBackend',
+]
+
+# ========================
+# DJANGO AXES CONFIGURATION
+# ========================
+AXES_ENABLED = True
+AXES_FAILURE_LIMIT = 3  # nombre d’essais autorisés avant blocage
+AXES_COOLOFF_TIME = timedelta(hours=1)  # blocage de 1 heure
+AXES_LOCKOUT_TEMPLATE = 'ecommerce_app/registration/account_locked.html'  # (optionnel)
+AXES_USE_USER_AGENT = True
+AXES_LOCK_OUT_BY_COMBINATION_USER_AND_IP = True
+AXES_RESET_ON_SUCCESS = True
+AXES_ONLY_USER_FAILURES = False
+AXES_META_PRECEDENCE_ORDER = [
+    'HTTP_X_FORWARDED_FOR',
+    'REMOTE_ADDR',
 ]
 
 # ========================
